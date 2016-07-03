@@ -1,3 +1,14 @@
+<?php
+$comment_status = '';
+if (isset($_COOKIE['commnet_guest_status']) && $_COOKIE['commnet_guest_status'] == '1') {
+    setcookie('commnet_guest_status', '1', time() - 1);
+    $comment_status = '1';  //1表示成功评论
+    $comment_status = '1';  //1表示成功评论
+} elseif (isset($_COOKIE['commnet_guest_status']) && $_COOKIE['commnet_guest_status'] == '0') {
+    setcookie('commnet_guest_status', '0', time() - 1);
+    $comment_status = '0';  //0表示失败评论
+}
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -229,11 +240,9 @@ mia;
     mysqli_close($link);
     ?>
     <?php
-    if (isset($_COOKIE['commnet_guest_status']) && $_COOKIE['commnet_guest_status'] == '1') {
-        $_COOKIE['commnet_guest_status'] = '';
+    if ($comment_status == '1') {
         echo "<div class='comment_succeed'><p>评论成功!^_^</p></div>";
-    } elseif (isset($_COOKIE['commnet_guest_status']) && $_COOKIE['commnet_guest_status'] == '0') {
-        $_COOKIE['commnet_guest_status'] = '';
+    } elseif ($comment_status == '0') {
         echo "<div class='comment_faild'><p>评论失败，请检查输入:)</p></div>";
     }
     ?>
@@ -259,15 +268,16 @@ mia;
             </p>
         </div>
     </form>
-    <?php
-    if (isset($_COOKIE['commnet_guest_status']) && $_COOKIE['commnet_guest_status'] == '1') {
-        $_COOKIE['commnet_guest_status'] = '';
-        echo "<p>评论成功!^_^</p>";
-    } elseif (isset($_COOKIE['commnet_guest_status']) && $_COOKIE['commnet_guest_status'] == '0') {
-        $_COOKIE['commnet_guest_status'] = '';
-        echo "<p>评论失败，请检查输入:)</p>";
-    }
-    ?>
+    <!--    --><?php
+    //    if (isset($_COOKIE['commnet_guest_status']) && $_COOKIE['commnet_guest_status'] == '1') {
+    ////        $_COOKIE['commnet_guest_status'] = '';
+    //        setcookie('commnet_guest_status', '1',time()-1);
+    //        echo "<p>评论成功!^_^</p>";
+    //    } elseif (isset($_COOKIE['commnet_guest_status']) && $_COOKIE['commnet_guest_status'] == '0') {
+    //        $_COOKIE['commnet_guest_status'] = '';
+    //        echo "<p>评论失败，请检查输入:)</p>";
+    //    }
+    //    ?>
 </div>
 </body>
 </html>
