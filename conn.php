@@ -8,10 +8,13 @@
 
 //数据库连接
 $host = "127.0.0.1";
-$user  = "root";
+$user = "root";
 $passwords = "";
-$database = "gusetbook";
+$database = "guestbook";
 
-$link  = mysqli_connect($host,$user,$passwords) or die("数据库连接失败");
-mysqli_select_db($link,$database) or die("数据库选择失败");
+$link = mysqli_connect($host, $user, $passwords) or die("数据库连接失败");
+mysqli_select_db($link, $database) or die("数据库选择失败");
 
+
+
+?>
