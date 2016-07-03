@@ -128,9 +128,9 @@ mia;
     ?>
     <?php
     if ($comment_status == '1') {
-        echo "<div class='comment_succeed'><p>评论成功!^_^</p></div>";
+        echo "<div class='comment_succeed' id='comment_succeed'><p>评论成功!^_^</p></div>";
     } elseif ($comment_status == '0') {
-        echo "<div class='comment_faild'><p>评论失败，请检查输入:)</p></div>";
+        echo "<div class='comment_faild' id='comment_failed'><p>评论失败，请检查输入:)</p></div>";
     }
     ?>
     <form action="wp-comments-post.php" method="post" class="form_post">

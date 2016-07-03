@@ -29,13 +29,13 @@ if (isset($_POST['nickname'])) {
     } else {
 //        echo "nickname error";
         setcookie('commnet_guest_status', '0');
-        redirect("index.php");
+        redirect("index.php#comment_failed");
         exit;
     }
 } else {
 //    echo "nickname2 error";
     setcookie('commnet_guest_status', '0');
-    redirect("index.php");
+    redirect("index.php#comment_failed");
     exit;
 }
 //email
@@ -46,13 +46,13 @@ if (isset($_POST['email'])) {
     } else {
 //        echo "email ERROR";
         setcookie('commnet_guest_status', '0');
-        redirect("index.php");
+        redirect("index.php#comment_failed");
         exit;
     }
 } else {
 //    echo "email2 ERROR";
     setcookie('commnet_guest_status', '0');
-    redirect("index.php");
+    redirect("index.php#comment_failed");
     exit;
 }
 
@@ -67,14 +67,13 @@ if (isset($_POST['site'])) {
         } else {
 //            echo "site ERROR";
             setcookie('commnet_guest_status', '0');
-            redirect("index.php");
+            redirect("index.php#comment_failed");
             exit;
         }
     } else {
         $site = "";
     }
 } else {
-//    echo "site2 ERROR";
     $site = "";
     exit;
 }
@@ -88,10 +87,11 @@ if (isset($_POST['comment'])) {
     } else {
 //        echo "comment error";
         setcookie('commnet_guest_status', '0');
-        redirect("index.php");
+        redirect("index.php#comment_failed");
         exit;
     }
 } else {
+    redirect("index.php#comment_failed");
     echo "comment2 error";
     exit;
 }
@@ -144,6 +144,11 @@ $header_img = $path_img . rand(1, 45) . '.jpg';
 //连接数据库
 include('conn.php');
 
+$num = 10;//每页显示10条数据
+$sql_count_row = "select * from comment";
+$total = mysqli_num_rows(mysqli_query($link, $sql_count_row)); //查询数据的总数total
+$pagenum = intval(ceil($total / $num));      //获得总页数 pagenum
+
 $sql_commnet_insert = <<<mia
 insert into comment(nickname,email,site,comment_content,header,time,region_city) values('$nickname','$email','$site','$comment','$header_img','$time_now','$region_city')
 mia;
@@ -153,12 +158,13 @@ if (mysqli_affected_rows($link)) {
     setcookie('commnet_guest_status', '1');
     setcookie('commnet_guest_name', $nickname);
     setcookie('commnet_guest_email', $email);
-    redirect("index.php");
+    $redirPage = "index.php?page=" . $pagenum . "#comment_succeed";
+    redirect($redirPage);
 
 } else {
     setcookie('commnet_guest_status', '0');
     $_COOKIE['commnet_guest_name'] = $nickname;
     $_COOKIE['commnet_guest_email'] = $email;
-    redirect("index.php");
+    redirect("index.php#comment_failed");
 }
 ?>

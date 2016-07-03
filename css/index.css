@@ -111,7 +111,7 @@ header>p{
     height: auto;
     text-align: center;
     font-size: 14px;
-    margin: 0 auto
+    margin: 18px auto;
 }
 
 .comment_succeed > p, .comment_faild > p {
