@@ -1,4 +1,5 @@
 <?php
+session_start();
 /**
  * Created by PhpStorm.
  * User: 星星
@@ -17,22 +18,26 @@ function redirect($string)
 if (isset($_POST['admin_comment_submit'])) {
     if (isset($_POST['admin_comment']) && isset($_POST['guest_id'])) {
         $admin_post = $_POST['admin_comment'];
-        $guest_id =$_POST['guest_id'];
-        $view_page= $_POST['view_page'];
+        $guest_id = $_POST['guest_id'];
+        $view_page = "admin/admin.php?page=" . $_POST['view_page'];
+
         //当前时间
         date_default_timezone_set('PRC');
         $time_now = date("Y-m-d H:i:s", time());
 
         include "conn.php";
         $sql_admin_insert_comment = <<<mia
-update comment set admin_comment_content=$admin_post,set admin_comment_flag='1',set admin_comment_time=$time_now where id = $guest_id
+update comment set admin_comment_content='$admin_post', admin_comment_flag='1',admin_comment_time='$time_now' where id = $guest_id
 mia;
         mysqli_query($link, $sql_admin_insert_comment);
         if (mysqli_affected_rows($link)) {
-            setcookie("comment_status", '1');
-            redirect("../admin/admin.php");
+            $_SESSION['comment_status'] = '1';
+            redirect($view_page);
+            exit;
         } else {
-            setcookie("comment_status", '1');
+            $_SESSION['comment_status'] = '1';
+            redirect($view_page);
+            exit;
         }
     }
 }
@@ -55,7 +60,6 @@ if (isset($_POST['nickname'])) {
         exit;
     }
 } else {
-//    echo "nickname2 error";
     setcookie('commnet_guest_status', '0');
     redirect("index.php#comment_failed");
     exit;
@@ -102,7 +106,7 @@ if (isset($_POST['site'])) {
 
 //comment
 //UTF-8汉字字母数字下划线正则表达式！！！
-$patten_comment = '/^[\x{4e00}-\x{9fa5}A-Za-z0-9_]+$/u';
+$patten_comment = '/^[\x{4e00}-\x{9fa5}A-Za-z0-9_]{1,100}+$/u';
 if (isset($_POST['comment'])) {
     if (preg_match($patten_comment, $_POST['comment'])) {
         $comment = $_POST['comment'];

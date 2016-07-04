@@ -61,7 +61,7 @@ if (isset($_COOKIE['commnet_guest_status']) && $_COOKIE['commnet_guest_status'] 
     $offset = ($page - 1) * $num;         //获取limit的第一个参数的值 offset ，假如第一页则为(1-1)*10=0,第二页为(2-1)*10=10。             (传入的页数-1) * 每页的数据 得到limit第一个参数的值
 
     $sql_check_all_comment = <<<mia
-select id,nickname,comment_content,time,region_city,header from comment order by id limit $offset,$num 
+select id,nickname,comment_content,time,region_city,header,admin_comment_flag,admin_comment_content,admin_comment_time from comment order by id limit $offset,$num 
 mia;
 
 
@@ -82,6 +82,15 @@ mia;
             '<span class="region_city">' . $item['region_city'] . '</span>' .
             '</div>';
         echo '</div></div>';
+        if ($item['admin_comment_flag']=='1'){
+            echo '<div class="admin_comment_body"><div class="admin_comment_meta">';
+            echo "<div class='header_box'><img src='../guestbook/userheader/jack.jpg'></div><div class='nickname_show'>Jack</div></div><div class='admin_comment_content'>";
+            echo '<div class="dot"><span class="dot3"></span><span class="dot4"></span></div><span class="admin_comment_text">' . $item['admin_comment_content'] . '</span>';
+            echo '<div class="comment_info">' .
+                '<span class="time">' . $item['admin_comment_time'] . '  </span>' .
+                '</div>';
+            echo '</div></div>';
+        }
     }
     //print_r($res);
     mysqli_close($link);
@@ -130,7 +139,7 @@ mia;
         echo "<div class='comment_faild' id='comment_failed'><p>评论失败，请检查输入:)</p></div>";
     }
     ?>
-    <form action="wp-comments-post.php" method="post" class="form_post">
+    <form action="wp-comments-post.php" method="post" class="form_post"  onkeydown="keydown()">
         <div class="form_content">
             <div class="form_left">
                 <input type="text" placeholder="你的大名" required name="nickname" <?php
@@ -148,11 +157,19 @@ mia;
             </div>
             <div class="form_right">
                 <textarea required placeholder="写下你的评论..." name="comment"></textarea>
-                <p class="btn_sub"><input type="submit"  name="submit_S" value="留个足迹">
+                <p class="btn_sub"><input type="submit"  name="submit" value="留个足迹">
                 </p></div>
 
         </div>
     </form>
 </div>
+<script type="text/javascript">
+    function keydown() {
+        if (event.keycode == 13) {
+            event.returnvalue = false;  //不刷新界面
+            form.btnok.click(); //表单提交
+        }
+    }
+</script>
 </body>
 </html>

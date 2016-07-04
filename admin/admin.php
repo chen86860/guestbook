@@ -1,11 +1,24 @@
 <?php session_start();
+date_default_timezone_set('PRC');
 if (!isset($_SESSION['username'])) {
     echo "<script  type='text/javascript''>";
-    echo "window.location.href='index.php'";
+    echo "window.location.href='../index.php'";
     echo "</script>";
     exit;
 }
-
+$comment_status = "";
+if (isset($_SESSION['comment_status'])) {
+    if ($_SESSION['comment_status'] == '1') {
+        $comment_status = "1";
+        unset($_SESSION['comment_status']);
+    } else {
+        unset($_SESSION['comment_status']);
+        $comment_status = "0";
+    }
+} else {
+    unset($_SESSION['comment_status']);
+    $comment_status = "";
+}
 
 ?>
 <!doctype html>
@@ -105,6 +118,11 @@ if (!isset($_SESSION['username'])) {
             border-radius: 3px;
             color: #fff;
         }
+        .form_content{
+            width: 100%;
+            margin: 0 auto;
+            padding-top: 0;
+        }
     </style>
 </head>
 <body>
@@ -133,6 +151,16 @@ if (!isset($_SESSION['username'])) {
             exit;
         }
 
+    }
+    if ($comment_status != "") {
+        if ($comment_status == "1") {
+            $comment_status = "";
+            echo "<span class='del_status del_suc'>回复成功^_^</span>";
+
+        } elseif ($comment_status === "0") {
+            $comment_status = "";
+            echo "<span class='del_status del_err'>回复失败;(</span>";
+        }
     }
     ?>
 
@@ -199,7 +227,7 @@ mia;
             '<span class="time">' . $item['time'] . '  </span>' .
             '<span class="region_city">' . $item['region_city'] . '</span>' .
             '<span class="del_item">' . '<a href=./admin.php?page=' . $page . '&del=' . $item['id'] . ">删除" . "</a></span>" .
-            '<span class="reply_item">' . '<a href=#' . $item['id'] . "  onclick=onRelpy(this," . $item['id'] .",".$page. ")>回复</a></span>" .
+            '<span class="reply_item">' . '<a href=#' . $item['id'] . "  onclick=onRelpy(this," . $item['id'] . "," . $page . ")>回复</a></span>" .
             '</div>';
         echo '</div></div>';
     }
@@ -273,12 +301,12 @@ mia;
         }
     )
 
-    var toggerTrigger=1;
-    function onRelpy(node, id,page ) {
+    var toggerTrigger = 1;
+    function onRelpy(node, id, page) {
 
         var domtree = $(node).parent().parent().parent().parent();
         var form_context = "" +
-            "<form action=" + "'wp-comments-post.php' " + "method='post' class='form_post'>" +
+            "<form action=" + "'../wp-comments-post.php' " + "method='post' class='form_post'>" +
             "<div class='form_content'>" +
             "<textarea required placeholder='请指示...' name='admin_comment'></textarea>" +
             "<span class='btn_sub'>" +
