@@ -30,6 +30,10 @@ if (!isset($_SESSION['username'])) {
             color: #607d8b;
         }
 
+        .e_hidden {
+            display: none;
+        }
+
         .del_status {
             display: inline-block;
             text-align: center;
@@ -55,6 +59,51 @@ if (!isset($_SESSION['username'])) {
             background-color: #fdbfbf;
             color: #832f2f;
             border: 1px solid #ff7c7c;
+        }
+
+        .form_content > textarea {
+            width: 344px;
+            border: 1px solid #ddd;
+            resize: none;
+            border-radius: 3px;
+            padding: 3px 4px 3px;
+        }
+
+        .form_post {
+            width: 78.0%;
+            margin: 0 auto;
+            height: 46px;
+            margin-left: 91px;
+            padding-right: 6px;
+            padding-top: 8px;
+            background-color: #f5f5f5;
+            /* height: 300px; */
+            margin-top: -10px;
+            border: 1px solid #dedede;
+            border-radius: 3px;
+            text-align: right;
+        }
+
+        .btn_sub {
+            /*height: 38px;*/
+            text-align: right;
+            top: -21px;
+            background-color: #ddd;
+            /* margin-top: -40px; */
+            position: relative;
+            /*display: inline-block;*/
+        }
+
+        .btn_sub > input {
+            cursor: pointer;
+            height: 38px;
+            top: 6px;
+            border: 1px solid #2196F3;
+            position: relative;
+            background-color: #2196F3;
+            outline: none;
+            border-radius: 3px;
+            color: #fff;
         }
     </style>
 </head>
@@ -150,7 +199,7 @@ mia;
             '<span class="time">' . $item['time'] . '  </span>' .
             '<span class="region_city">' . $item['region_city'] . '</span>' .
             '<span class="del_item">' . '<a href=./admin.php?page=' . $page . '&del=' . $item['id'] . ">删除" . "</a></span>" .
-            '<span class="reply_item">' . '<a href=./admin.php?del=' . $item['id'] . ">回复" . "</a></span>" .
+            '<span class="reply_item">' . '<a href=#' . $item['id'] . "  onclick=onRelpy(this," . $item['id'] .",".$page. ")>回复</a></span>" .
             '</div>';
         echo '</div></div>';
     }
@@ -198,7 +247,13 @@ mia;
 
     mysqli_close($link);
     ?>
-
+    <!--    <form action="wp-comments-post.php" method="post" class="form_post">-->
+    <!--        <div class="form_content">-->
+    <!--                <textarea required placeholder="请指示..." name="comment"></textarea>-->
+    <!--                <span class="btn_sub"><input type="submit" name="submit" value="回复">-->
+    <!--                </span>-->
+    <!--        </div>-->
+    <!--    </form>-->
 </div>
 <script type="text/javascript">
     $(document).ready(
@@ -218,6 +273,36 @@ mia;
         }
     )
 
+    var toggerTrigger=1;
+    function onRelpy(node, id,page ) {
+
+        var domtree = $(node).parent().parent().parent().parent();
+        var form_context = "" +
+            "<form action=" + "'wp-comments-post.php' " + "method='post' class='form_post'>" +
+            "<div class='form_content'>" +
+            "<textarea required placeholder='请指示...' name='admin_comment'></textarea>" +
+            "<span class='btn_sub'>" +
+            "<input type='text' class='e_hidden' name='guest_id' value='" + id + "'>" +
+            "<input type='text' class='e_hidden' name='view_page' value='" + page + "'>" +
+            "<input type='submit' name='admin_comment_submit' value='回复'>" +
+            "</span>" + "</div>" + "</form>";
+
+
+//        console.log(form_context);
+        //先移除，再添加！！！
+        $("form").remove();
+        domtree.after(form_context);
+//        if (toggerTrigger==1){
+//            $("form").remove();
+////            console.log(domtree.parent().find("form"));
+////            domtree.after(form_context);
+////            toggerTrigger=0;
+//        }
+//        else {
+//            domtree.find("form").remove();
+//            domtree.after(form_context);
+//        }
+    }
 </script>
 </body>
 </html>

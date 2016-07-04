@@ -91,23 +91,44 @@ Date :2006-12-03
 </head>
 <body>
 <div class="hot">
-    <a href="index.php">删除</a>
+    <a href="#" onclick=onReply(this,'bbb')>删除</a>
 </div>
 <div class="hot">
-    <a href="index.php">删除</a>
+    <div class="sss">
+    <a href="#" onclick=onReply(this,'aaa')>删除</a></div>
 </div>
 <script type="text/javascript">
-    $(document).ready(
-        $(".hot").bind('mouseenter', function () {
-            alert("aaa");
-        }))
-    //)
-    //    $(function () {
-    //        $("hot").mouseenter(function () {
-    //            alert("aaa");
-    //        })
-    //          alert("bbb");
+//    function reply(a) {
+//        alert(this);
+
+
+//    }
+//    $(function reply(a) {
+//        alert(a);
 //    })
+//        $(".hot").bind('mouseenter', function () {
+//            alert("aaa");
+//        }))
+    //)
+function onReply(node,id){
+    var domtree= $(node).parent();
+//    domtree.css("background-color", "#F00");
+
+    var form_context="" +
+        "<form action="+"'wp-comments-post.php' "+"method='post' class='form_post'>"+
+        "<div class='form_content'>"+
+        "<textarea required placeholder='请指示...' name='comment'></textarea>"+
+        "<span class='btn_sub'><input type='submit' name='submit' value='回复'>"+
+        "</span>"+"</div>"+"</form>";
+    console.log(form_context);
+    domtree.append(form_context);
+//    var uname = $(btn).parent("td").parent("tr").find("td:eq(1)");
+//    alert('我要修改用户名称为' + uname + '的一行');
+//    alert($(this).parent().prev().prev().text() + "的数值必须为数字！");
+    /**
+     其它代码
+     **/
+}
 </script>
 </body>
 </html>

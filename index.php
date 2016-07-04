@@ -148,7 +148,7 @@ mia;
             </div>
             <div class="form_right">
                 <textarea required placeholder="写下你的评论..." name="comment"></textarea>
-                <p class="btn_sub"><input type="submit" name="submit" value="留个足迹">
+                <p class="btn_sub"><input type="submit"  name="submit_S" value="留个足迹">
                 </p></div>
 
         </div>
