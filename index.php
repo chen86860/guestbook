@@ -3,7 +3,6 @@ $comment_status = '';
 if (isset($_COOKIE['commnet_guest_status']) && $_COOKIE['commnet_guest_status'] == '1') {
     setcookie('commnet_guest_status', '1', time() - 1);
     $comment_status = '1';  //1表示成功评论
-    $comment_status = '1';  //1表示成功评论
 } elseif (isset($_COOKIE['commnet_guest_status']) && $_COOKIE['commnet_guest_status'] == '0') {
     setcookie('commnet_guest_status', '0', time() - 1);
     $comment_status = '0';  //0表示失败评论
@@ -15,6 +14,7 @@ if (isset($_COOKIE['commnet_guest_status']) && $_COOKIE['commnet_guest_status'] 
     <meta charset="UTF-8">
     <title>留言墙</title>
     <link href="css/index.css" rel="stylesheet" type="text/css">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
 </head>
 <body>
 <header>
@@ -124,9 +124,6 @@ mia;
     } else {
         echo "<a href='index.php?page=" . $page_end . "'><span>>></span></a></p></div>";
     }
-
-    ?>
-    <?php
     if ($comment_status == '1') {
         echo "<div class='comment_succeed' id='comment_succeed'><p>评论成功!^_^</p></div>";
     } elseif ($comment_status == '0') {
