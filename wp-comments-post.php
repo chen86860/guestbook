@@ -15,20 +15,33 @@ function redirect($string)
     echo '</script>';
 }
 
-if (isset($_POST['admin_comment_submit'])) {
-    if (isset($_POST['admin_comment']) && isset($_POST['guest_id'])) {
-        $admin_post = $_POST['admin_comment'];
-        $guest_id = $_POST['guest_id'];
-        $view_page = "admin/admin.php?page=" . $_POST['view_page'];
+if (isset($_POST['comment_submit'])) {
+    if (isset($_POST['__comment']) && isset($_POST['__guest_nickname'])) {
+        $__comment = $_POST['__comment'];
+        $guest_nickname = $_POST['__guest_nickname'];
+        $view_page = "index.php?page=" . $_POST['view_page'];
 
         //当前时间
         date_default_timezone_set('PRC');
         $time_now = date("Y-m-d H:i:s", time());
 
         include "conn.php";
-        $sql_admin_insert_comment = <<<mia
-update comment set admin_comment_content='$admin_post', admin_comment_flag='1',admin_comment_time='$time_now' where id = $guest_id
+
+        //构建sql语句
+        //判断是否是管理员
+        if (isset($_SESSION['username'])) {
+            $view_page = "admin/admin.php?page=" . $_POST['view_page'];
+            $session_user = $_SESSION['username'];
+            $sql_admin_insert_comment = <<<mia
+insert into comment_guest values('$guest_nickname','$session_user',' $__comment','$time_now')
 mia;
+        } else {
+            $cookie_user = $_COOKIE['username'];
+            $sql_admin_insert_comment = <<<mia
+insert into comment_guest values('$guest_nickname','$cookie_user',' $__comment','$time_now')
+mia;
+        }
+
         mysqli_query($link, $sql_admin_insert_comment);
         if (mysqli_affected_rows($link)) {
             $_SESSION['comment_status'] = '1';
@@ -170,6 +183,16 @@ $header_img = $path_img . rand(1, 45) . '.jpg';
 //连接数据库
 include('conn.php');
 
+//判断用户是否存在
+$sql_check_user_exit = <<<mia
+select header from comment where email = '$email' and nickname = '$nickname';
+mia;
+$res = mysqli_fetch_array(mysqli_query($link, $sql_check_user_exit));
+
+if ($res != null) {
+    $header_img = $res['header'];
+}
+
 $num = 10;//每页显示10条数据
 $sql_count_row = "select * from comment";
 $total = mysqli_num_rows(mysqli_query($link, $sql_count_row)); //查询数据的总数total
@@ -184,6 +207,7 @@ if (mysqli_affected_rows($link)) {
     setcookie('commnet_guest_status', '1');
     setcookie('commnet_guest_name', $nickname);
     setcookie('commnet_guest_email', $email);
+    setcookie('commnet_guest_header', $header_img);
     $redirPage = "index.php?page=" . $pagenum . "#comment_succeed";
     redirect($redirPage);
 

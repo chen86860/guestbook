@@ -124,6 +124,15 @@ if (isset($_POST['username'])) {
     exit;
 }
 
+//用户名进行加密保存
+//md5(str,username+salt)
+$salt_user = $username.'0_1,z+';
+$username=md5(md5($username,$salt_user));
+
+//密码进行加密保存
+//md5(str,username+salt)
+$salt_paw=$username."2;`_d,'4";
+$passcode=md5(md5($passcode.$salt_paw));
 
 //数据库连接
 include "../conn.php";

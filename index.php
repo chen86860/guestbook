@@ -18,7 +18,8 @@ if (isset($_COOKIE['commnet_guest_status']) && $_COOKIE['commnet_guest_status'] 
 </head>
 <body>
 
-<div class="warp"><header>
+<div class="warp">
+    <header>
         <p>留言墙</p>
     </header>
     <?php
@@ -53,7 +54,6 @@ if (isset($_COOKIE['commnet_guest_status']) && $_COOKIE['commnet_guest_status'] 
     $pagenum = ceil($total / $num);      //获得总页数 pagenum
     //假如传入的页数参数apge 大于总页数 pagenum，则显示错误信息
     if ($page > $pagenum || $page == 0) {
-//        echo "error : Can Not Found The page .";exit;
         $page = 1;
 
     }
@@ -77,15 +77,17 @@ mia;
         echo "<div class='header_box'><img src=" . $item['header'] . "></div><div class='nickname_show'>" . $item['nickname'] . "</div></div><div class='comment_content'>";
         echo '<div class="dot"><span class="dot1"></span><span class="dot2"></span></div><span class="comment_text">' . $item['comment_content'] . '</span>';
         echo '<div class="comment_info">' .
+            '<span class="clock_img"><img src="img/clock.png"></span>' .
             '<span class="time">' . $item['time'] . '  </span>' .
             '<span class="region_city">' . $item['region_city'] . '</span>' .
             '</div>';
         echo '</div></div>';
-        if ($item['admin_comment_flag']=='1'){
+        if ($item['admin_comment_flag'] == '1') {
             echo '<div class="admin_comment_body"><div class="admin_comment_meta">';
             echo "<div class='header_box'><img src='../guestbook/userheader/jack.jpg'></div><div class='nickname_show'>Jack</div></div><div class='admin_comment_content'>";
             echo '<div class="dot"><span class="dot3"></span><span class="dot4"></span></div><span class="admin_comment_text">' . $item['admin_comment_content'] . '</span>';
             echo '<div class="comment_info">' .
+                '<span class="clock_img"><img src="img/clock.png"></span>' .
                 '<span class="time">' . $item['admin_comment_time'] . '  </span>' .
                 '</div>';
             echo '</div></div>';
@@ -138,7 +140,7 @@ mia;
         echo "<div class='comment_faild' id='comment_failed'><p>评论失败，请检查输入:)</p></div>";
     }
     ?>
-    <form action="wp-comments-post.php" method="post" class="form_post"  onkeydown="keydown()">
+    <form action="wp-comments-post.php" method="post" class="form_post" onkeydown="keydown()">
         <div class="form_content">
             <div class="form_left">
                 <input type="text" placeholder="你的大名" required name="nickname" <?php
@@ -156,7 +158,7 @@ mia;
             </div>
             <div class="form_right">
                 <textarea required placeholder="写下你的评论..." name="comment"></textarea>
-                <p class="btn_sub"><input type="submit"  name="submit" value="留个足迹">
+                <p class="btn_sub"><input type="submit" name="submit" value="留个足迹">
                 </p></div>
 
         </div>

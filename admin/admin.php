@@ -118,7 +118,8 @@ if (isset($_SESSION['comment_status'])) {
             border-radius: 3px;
             color: #fff;
         }
-        .form_content{
+
+        .form_content {
             width: 100%;
             margin: 0 auto;
             padding-top: 0;
@@ -127,46 +128,47 @@ if (isset($_SESSION['comment_status'])) {
 </head>
 <body>
 
-<header>
-    <?php
-    $patten_del = '/^\d{0,3}$/';
-    if (isset($_GET['del'])) {
-        if (preg_match($patten_del, $_GET['del'])) {
-            $del = intval($_GET['del']);
-            include "../conn.php";
-            /** @var del comment $sql_del_comment */
-            $sql_del_comment = "delete from comment WHERE id='$del' LIMIT 1";
-            $result_del = mysqli_query($link, $sql_del_comment);
-            if (mysqli_affected_rows($link)) {
-                echo "<span class='del_status del_suc'>删除成功^_^</span>";
+
+<div class="warp">
+    <header>
+        <?php
+        $patten_del = '/^\d{0,3}$/';
+        if (isset($_GET['del'])) {
+            if (preg_match($patten_del, $_GET['del'])) {
+                $del = intval($_GET['del']);
+                include "../conn.php";
+                /** @var del comment $sql_del_comment */
+                $sql_del_comment = "delete from comment WHERE id='$del' LIMIT 1";
+                $result_del = mysqli_query($link, $sql_del_comment);
+                if (mysqli_affected_rows($link)) {
+                    echo "<span class='del_status del_suc'>删除成功^_^</span>";
+                } else {
+                    echo "<span class='del_status del_err'>删除失败;(</span>";
+                }
+
+
             } else {
-                echo "<span class='del_status del_err'>删除失败;(</span>";
+                echo "<script  type='text/javascript''>";
+                echo "window.location.href='admin.php'";
+                echo "</script>";
+                exit;
             }
 
-
-        } else {
-            echo "<script  type='text/javascript''>";
-            echo "window.location.href='admin.php'";
-            echo "</script>";
-            exit;
         }
+        if ($comment_status != "") {
+            if ($comment_status == "1") {
+                $comment_status = "";
+                echo "<span class='del_status del_suc'>回复成功^_^</span>";
 
-    }
-    if ($comment_status != "") {
-        if ($comment_status == "1") {
-            $comment_status = "";
-            echo "<span class='del_status del_suc'>回复成功^_^</span>";
-
-        } elseif ($comment_status === "0") {
-            $comment_status = "";
-            echo "<span class='del_status del_err'>回复失败;(</span>";
+            } elseif ($comment_status === "0") {
+                $comment_status = "";
+                echo "<span class='del_status del_err'>回复失败;(</span>";
+            }
         }
-    }
-    ?>
+        ?>
 
-    <p>留言墙后台管理</p>
-</header>
-<div class="warp">
+        <p>留言墙后台管理</p>
+    </header>
     <?php
     /**
      * Created by PhpStorm.
@@ -206,8 +208,9 @@ if (isset($_SESSION['comment_status'])) {
     }
     $offset = ($page - 1) * $num;         //获取limit的第一个参数的值 offset ，假如第一页则为(1-1)*10=0,第二页为(2-1)*10=10。             (传入的页数-1) * 每页的数据 得到limit第一个参数的值
 
+    //用户评论列表
     $sql_check_all_comment = <<<mia
-select id,nickname,comment_content,time,region_city,header from comment order by id limit $offset,$num 
+select id,nickname,comment_content,time,region_city,header,admin_comment_flag,admin_comment_content,admin_comment_time  from comment order by id limit $offset,$num 
 mia;
 
 
@@ -218,18 +221,54 @@ mia;
     }
     mysqli_free_result($result);
 
+    //    //用户回复列表
+    //    $sql_check_all_others_comment=<<<mia
+    //select comment_nick_name,comment_content,comment_time from comment_guest where comment_host_name= order by id limit $offset,$num
+    //mia;
+    //    $result_reply = mysqli_query($link, $sql_check_all_comment);
+    //    $res_reply = array();
+    //    while ($my_result_reply = mysqli_fetch_array($result)) {
+    //        $res_reply[] = $my_result_reply;
+    //    }
+    //    mysqli_free_result($result_reply);
+
 
     foreach ($res as $item) {
         echo '<div class="comment_body"><div class="comment_meta">';
         echo "<div class='header_box'><img src=../" . $item['header'] . "></div><div class='nickname_show'>" . $item['nickname'] . "</div></div><div class='comment_content'>";
         echo '<div class="dot"><span class="dot1"></span><span class="dot2"></span></div><span class="comment_text">' . $item['comment_content'] . '</span>';
         echo '<div class="comment_info">' .
+            '<span class="clock_img"><img src="../img/clock.png"></span>' .
             '<span class="time">' . $item['time'] . '  </span>' .
             '<span class="region_city">' . $item['region_city'] . '</span>' .
             '<span class="del_item">' . '<a href=./admin.php?page=' . $page . '&del=' . $item['id'] . ">删除" . "</a></span>" .
-            '<span class="reply_item">' . '<a href=#' . $item['id'] . "  onclick=onRelpy(this," . $item['id'] . "," . $page . ")>回复</a></span>" .
+            '<span class="reply_item">' . '<a href=#' . $item['id'] . "  onclick=onRelpy(this," . $item['nickname'] . "," . $page . ")>回复</a></span>" .
             '</div>';
         echo '</div></div>';
+
+
+        //用户回复列表
+        $item_user_name = $item['nickname'];
+        $sql_check_all_others_comment = <<<mia
+select comment_nick_name,comment_content,comment_time from comment_guest where comment_host_name='$item_user_name' order by id limit $offset,$num
+mia;
+        $result_reply = mysqli_query($link, $sql_check_all_comment);
+        $res_reply = array();
+        while ($my_result_reply = mysqli_fetch_array($result)) {
+            $res_reply[] = $my_result_reply;
+        }
+        mysqli_free_result($result_reply);
+
+        foreach ($res_reply as $item_reply) {
+            echo '<div class="admin_comment_body"><div class="admin_comment_meta">';
+            echo "<div class='header_box'><img src='../userheader/jack.jpg'></div><div class='nickname_show'>Jack</div></div><div class='admin_comment_content'>";
+            echo '<div class="dot"><span class="dot3"></span><span class="dot4"></span></div><span class="admin_comment_text">' . $item['admin_comment_content'] . '</span>';
+            echo '<div class="comment_info">' .
+                '<span class="clock_img"><img src="../img/clock.png"></span>' .
+                '<span class="time">' . $item['admin_comment_time'] . '  </span>' .
+                '</div>';
+            echo '</div></div>';
+        }
     }
     //print_r($res);
 
@@ -302,17 +341,17 @@ mia;
     )
 
     var toggerTrigger = 1;
-    function onRelpy(node, id, page) {
+    function onRelpy(node, guest_nickname, page) {
 
         var domtree = $(node).parent().parent().parent().parent();
         var form_context = "" +
             "<form action=" + "'../wp-comments-post.php' " + "method='post' class='form_post'>" +
             "<div class='form_content'>" +
-            "<textarea required placeholder='请指示...' name='admin_comment'></textarea>" +
+            "<textarea required placeholder='请指示...' name='__comment'></textarea>" +
             "<span class='btn_sub'>" +
-            "<input type='text' class='e_hidden' name='guest_id' value='" + id + "'>" +
+            "<input type='text' class='e_hidden' name='__guest_nickname' value='" + guest_nickname + "'>" +
             "<input type='text' class='e_hidden' name='view_page' value='" + page + "'>" +
-            "<input type='submit' name='admin_comment_submit' value='回复'>" +
+            "<input type='submit' name='comment_submit' value='回复'>" +
             "</span>" + "</div>" + "</form>";
 
 

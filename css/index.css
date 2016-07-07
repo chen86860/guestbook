@@ -8,7 +8,7 @@ header{
     width: 520px;
     height: 80px;
     display: block;
-    margin: 48px auto;
+    margin: 0 auto;
 }
 header>p{
     padding-left: 20px;
@@ -273,4 +273,14 @@ header>p{
 }
 .admin_comment_content{
     width: 314px;
+}
+.region_city{
+    margin-left: 7px;
+}
+.clock_img>img{
+    height: 11px;
+    margin-right: 8px;
+    position: relative;
+    margin-left: 2px;
+    top: 1px;
 }
