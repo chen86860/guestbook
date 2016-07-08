@@ -1,0 +1,90 @@
+html, body {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: "Open Sans", "lucida grande", "Segoe UI", arial, verdana, "lucida sans unicode", tahoma, sans-serif;
+}
+
+.content {
+    width: 400px;
+    background-color: #f9f9f9;
+    height: 360px;
+    border: 1px solid #dddddd;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 3px;
+    margin: 60px auto;
+
+}
+
+.content > ul {
+    width: 310px;
+    margin: 0px auto;
+    padding-top: 28px;
+    padding-left: 0;
+    list-style: none;
+}
+
+
+.content > ul > li > p {
+    /*text-align: right;*/
+    margin: 0;
+    height:69px;
+    width: 323px;
+}
+
+.content > ul > li > p > span > input[type=text], .content > ul > li > p > span > input[type=password] {
+    width: 310px;
+    height: 34px;
+    padding: 0 6px 0 6px;
+    outline: none;
+    border-radius: 3px;
+    margin: 6px 0 6px 0;
+    border: 1px solid #c7c7c7;
+
+}
+
+.content > ul > li {
+    text-align: center;
+}
+
+.submit_btn {
+    width: 70px;
+    height: 38px;
+    border: 1px solid #ddd;
+    color: #fff;
+    background-color: #007ee5;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 600;
+    outline: none;
+    line-height: 38px;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.submit_head {
+    text-align: left;
+    display: block;
+    background-color: #fff;
+    font-size: 18px;
+    height: 30px;
+    margin: 0;
+    padding: 15px 0 15px 47px;
+    border-bottom: 1px solid #ddd;
+    height: 30px;
+    line-height: 30px;
+}
+.error_msg{
+    font-size: 13px;
+    color: #635c5e;
+    /* position: relative; */
+    /* left: 0; */
+    margin-left: -225px;
+}
+.p_submit{
+    text-align: left;
+}
+.sub_lable{
+    margin: 0;
+}

@@ -132,3 +132,23 @@ function onReply(node,id){
 </script>
 </body>
 </html>
+
+<?php
+$res = array();
+include "conn.php";
+
+$sql_check_all_others_comment = <<<mia
+select comment_nick_name,comment_content,comment_time from comment_guest where comment_host_name='jackchen' order by comment_time
+mia;
+$result = mysqli_query($link,$sql_check_all_others_comment);
+while ($my_sult = mysqli_fetch_array($result)){
+    $res[]=$my_sult;
+}
+
+if (empty($res)){
+    echo "empty";
+}else{
+    echo "noempy";
+    print_r($res);
+}
+?>

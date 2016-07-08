@@ -139,10 +139,12 @@ include "../conn.php";
 
 //检测用户名及密码是否正确
 $check_query = mysqli_query($link, /** @lang 选择用户名 */
-    "select username from userdata where username='$username' and passwords='$passcode' limit 1");
+    "select username,nickname,header from userdata where username='$username' and passwords='$passcode' limit 1");
 if ($result = mysqli_fetch_array($check_query)) {
     //登录成功
     $_SESSION['username'] = $username;
+    $_SESSION['nickname'] = $result['nickname'];
+    $_SESSION['header'] = $result['header'];
     redirect("admin.php");
     exit;
 } else {

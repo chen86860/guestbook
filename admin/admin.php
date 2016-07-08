@@ -91,7 +91,7 @@ if (isset($_SESSION['comment_status'])) {
             padding-top: 8px;
             background-color: #f5f5f5;
             /* height: 300px; */
-            margin-top: -10px;
+            margin-top: 0;
             border: 1px solid #dedede;
             border-radius: 3px;
             text-align: right;
@@ -132,13 +132,15 @@ if (isset($_SESSION['comment_status'])) {
 <div class="warp">
     <header>
         <?php
-        $patten_del = '/^\d{0,3}$/';
+        $patten_user = '/^[\x{4e00}-\x{9fa5}A-Za-z0-9_\s]+$/u';
         if (isset($_GET['del'])) {
-            if (preg_match($patten_del, $_GET['del'])) {
-                $del = intval($_GET['del']);
+            if (preg_match($patten_user, $_GET['del'])) {
+                $del = $_GET['del'];
                 include "../conn.php";
                 /** @var del comment $sql_del_comment */
-                $sql_del_comment = "delete from comment WHERE id='$del' LIMIT 1";
+                $sql_del_comment = "delete from comment WHERE nickname='$del'";
+                $sql_del_comment_guset = "delete from comment_guest WHERE comment_host_name='$del'";
+                mysqli_query($link,$sql_del_comment_guset);
                 $result_del = mysqli_query($link, $sql_del_comment);
                 if (mysqli_affected_rows($link)) {
                     echo "<span class='del_status del_suc'>删除成功^_^</span>";
@@ -202,7 +204,6 @@ if (isset($_SESSION['comment_status'])) {
     $pagenum = ceil($total / $num);      //获得总页数 pagenum
     //假如传入的页数参数apge 大于总页数 pagenum，则显示错误信息
     if ($page > $pagenum || $page == 0) {
-//        echo "error : Can Not Found The page .";exit;
         $page = 1;
 
     }
@@ -210,65 +211,53 @@ if (isset($_SESSION['comment_status'])) {
 
     //用户评论列表
     $sql_check_all_comment = <<<mia
-select id,nickname,comment_content,time,region_city,header,admin_comment_flag,admin_comment_content,admin_comment_time  from comment order by id limit $offset,$num 
+select id,nickname,time,comment_content,region_city,header  from comment order by time desc limit $offset,$num 
 mia;
-
 
     $result = mysqli_query($link, $sql_check_all_comment);
     $res = array();
     while ($my_result = mysqli_fetch_array($result)) {
         $res[] = $my_result;
     }
-    mysqli_free_result($result);
-
-    //    //用户回复列表
-    //    $sql_check_all_others_comment=<<<mia
-    //select comment_nick_name,comment_content,comment_time from comment_guest where comment_host_name= order by id limit $offset,$num
-    //mia;
-    //    $result_reply = mysqli_query($link, $sql_check_all_comment);
-    //    $res_reply = array();
-    //    while ($my_result_reply = mysqli_fetch_array($result)) {
-    //        $res_reply[] = $my_result_reply;
-    //    }
-    //    mysqli_free_result($result_reply);
-
+        mysqli_free_result($result);
 
     foreach ($res as $item) {
         echo '<div class="comment_body"><div class="comment_meta">';
-        echo "<div class='header_box'><img src=../" . $item['header'] . "></div><div class='nickname_show'>" . $item['nickname'] . "</div></div><div class='comment_content'>";
+        echo "<div class='header_box'><img src=" . $item['header'] . "></div><div class='nickname_show'>" . $item['nickname'] . "</div></div><div class='comment_content'>";
         echo '<div class="dot"><span class="dot1"></span><span class="dot2"></span></div><span class="comment_text">' . $item['comment_content'] . '</span>';
         echo '<div class="comment_info">' .
             '<span class="clock_img"><img src="../img/clock.png"></span>' .
             '<span class="time">' . $item['time'] . '  </span>' .
             '<span class="region_city">' . $item['region_city'] . '</span>' .
-            '<span class="del_item">' . '<a href=./admin.php?page=' . $page . '&del=' . $item['id'] . ">删除" . "</a></span>" .
-            '<span class="reply_item">' . '<a href=#' . $item['id'] . "  onclick=onRelpy(this," . $item['nickname'] . "," . $page . ")>回复</a></span>" .
-            '</div>';
-        echo '</div></div>';
+            '<span class="del_item">' . '<a href=./admin.php?page=' . $page . '&del=' . $item['nickname'] . ">删除" . "</a></span>" .
+            '<span class="reply_item">' . '<a href=#' . $item['id'] . "  onclick=onRelpy(this,'" . $item['nickname'] . "'," . $page . ")>回复</a></span>" .
+            '</div></div>';
 
 
         //用户回复列表
         $item_user_name = $item['nickname'];
         $sql_check_all_others_comment = <<<mia
-select comment_nick_name,comment_content,comment_time from comment_guest where comment_host_name='$item_user_name' order by id limit $offset,$num
+select comment_nick_name,comment_content,comment_time,comment_header from comment_guest where comment_host_name='$item_user_name' order by comment_time
 mia;
-        $result_reply = mysqli_query($link, $sql_check_all_comment);
+        $result_reply = mysqli_query($link, $sql_check_all_others_comment);
         $res_reply = array();
-        while ($my_result_reply = mysqli_fetch_array($result)) {
+
+//        if (!empty(mysqli_fetch_array($result_reply))) {
+        while ($my_result_reply = mysqli_fetch_array($result_reply)) {
             $res_reply[] = $my_result_reply;
         }
-        mysqli_free_result($result_reply);
-
         foreach ($res_reply as $item_reply) {
             echo '<div class="admin_comment_body"><div class="admin_comment_meta">';
-            echo "<div class='header_box'><img src='../userheader/jack.jpg'></div><div class='nickname_show'>Jack</div></div><div class='admin_comment_content'>";
-            echo '<div class="dot"><span class="dot3"></span><span class="dot4"></span></div><span class="admin_comment_text">' . $item['admin_comment_content'] . '</span>';
+            echo "<div class='header_box'><img src=" . $item_reply['comment_header'] . "></div><div class='nickname_show'>" . $item_reply['comment_nick_name'] . "</div></div><div class='admin_comment_content'>";
+            echo '<div class="dot"><span class="dot3"></span><span class="dot4"></span></div><span class="admin_comment_text">' . $item_reply['comment_content'] . '</span>';
             echo '<div class="comment_info">' .
                 '<span class="clock_img"><img src="../img/clock.png"></span>' .
-                '<span class="time">' . $item['admin_comment_time'] . '  </span>' .
+                '<span class="time">' . $item_reply['comment_time'] . '  </span>' .
                 '</div>';
             echo '</div></div>';
         }
+        echo '</div>';
+        mysqli_free_result($result_reply);
     }
     //print_r($res);
 
@@ -314,13 +303,7 @@ mia;
 
     mysqli_close($link);
     ?>
-    <!--    <form action="wp-comments-post.php" method="post" class="form_post">-->
-    <!--        <div class="form_content">-->
-    <!--                <textarea required placeholder="请指示..." name="comment"></textarea>-->
-    <!--                <span class="btn_sub"><input type="submit" name="submit" value="回复">-->
-    <!--                </span>-->
-    <!--        </div>-->
-    <!--    </form>-->
+
 </div>
 <script type="text/javascript">
     $(document).ready(
@@ -340,35 +323,22 @@ mia;
         }
     )
 
-    var toggerTrigger = 1;
     function onRelpy(node, guest_nickname, page) {
-
         var domtree = $(node).parent().parent().parent().parent();
+        console.log(domtree);
         var form_context = "" +
             "<form action=" + "'../wp-comments-post.php' " + "method='post' class='form_post'>" +
             "<div class='form_content'>" +
-            "<textarea required placeholder='请指示...' name='__comment'></textarea>" +
+            "<textarea required placeholder='请指示...' name='comment'></textarea>" +
             "<span class='btn_sub'>" +
             "<input type='text' class='e_hidden' name='__guest_nickname' value='" + guest_nickname + "'>" +
             "<input type='text' class='e_hidden' name='view_page' value='" + page + "'>" +
             "<input type='submit' name='comment_submit' value='回复'>" +
             "</span>" + "</div>" + "</form>";
-
-
 //        console.log(form_context);
         //先移除，再添加！！！
         $("form").remove();
         domtree.after(form_context);
-//        if (toggerTrigger==1){
-//            $("form").remove();
-////            console.log(domtree.parent().find("form"));
-////            domtree.after(form_context);
-////            toggerTrigger=0;
-//        }
-//        else {
-//            domtree.find("form").remove();
-//            domtree.after(form_context);
-//        }
     }
 </script>
 </body>

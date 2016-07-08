@@ -260,19 +260,18 @@ header>p{
 }
 .admin_comment_body{
     width: 411px;
-    margin-left: 93px;
-    /* background-color: #ddd; */
-    height: 69px;
-    margin-top: -5px;
-    margin-bottom: 12px;
+    clear: both;
+    display: inherit;
+    margin-left: 89px;
+    margin-top: 13px;
 }
 .admin_comment_meta{
-    float: left;
     width: 54px;
-    margin-left: 5px;
+    float: left;
 }
 .admin_comment_content{
     width: 314px;
+    float: right;
 }
 .region_city{
     margin-left: 7px;
@@ -283,4 +282,15 @@ header>p{
     position: relative;
     margin-left: 2px;
     top: 1px;
+}
+.reply_item>a{
+    visibility: hidden;
+    text-decoration: none;
+    /* visibility: visible; */
+    color: #607d8b;
+    margin-left: 10px;
+    /* transition: visibility 1s ease; */
+}
+.e_hidden{
+    display: none;
 }

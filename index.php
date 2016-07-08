@@ -14,6 +14,7 @@ if (isset($_COOKIE['commnet_guest_status']) && $_COOKIE['commnet_guest_status'] 
     <meta charset="UTF-8">
     <title>留言墙</title>
     <link href="css/index.css" rel="stylesheet" type="text/css">
+    <script src="./js/jquery-3.0.0.min.js" type="text/javascript"></script>
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
 </head>
 <body>
@@ -60,7 +61,7 @@ if (isset($_COOKIE['commnet_guest_status']) && $_COOKIE['commnet_guest_status'] 
     $offset = ($page - 1) * $num;         //获取limit的第一个参数的值 offset ，假如第一页则为(1-1)*10=0,第二页为(2-1)*10=10。             (传入的页数-1) * 每页的数据 得到limit第一个参数的值
 
     $sql_check_all_comment = <<<mia
-select id,nickname,comment_content,time,region_city,header,admin_comment_flag,admin_comment_content,admin_comment_time from comment order by id limit $offset,$num 
+select id,nickname,comment_content,time,region_city,header from comment order by time desc limit $offset,$num 
 mia;
 
 
@@ -80,18 +81,36 @@ mia;
             '<span class="clock_img"><img src="img/clock.png"></span>' .
             '<span class="time">' . $item['time'] . '  </span>' .
             '<span class="region_city">' . $item['region_city'] . '</span>' .
+            '<span class="reply_item">' . '<a href=#' . $item['id'] . "  onclick=onRelpy(this,'" . $item['nickname'] . "'," . $page . ")>回复</a></span>" .
             '</div>';
-        echo '</div></div>';
-        if ($item['admin_comment_flag'] == '1') {
+        echo '</div>';
+
+
+        //用户回复列表
+        $item_user_name = $item['nickname'];
+        $sql_check_all_others_comment = <<<mia
+select comment_nick_name,comment_content,comment_time,comment_header from comment_guest where comment_host_name='$item_user_name' order by comment_time
+mia;
+        $result_reply = mysqli_query($link, $sql_check_all_others_comment);
+        $res_reply = array();
+
+//        if (!empty(mysqli_fetch_array($result_reply))) {
+        while ($my_result_reply = mysqli_fetch_array($result_reply)) {
+            $res_reply[] = $my_result_reply;
+        }
+        foreach ($res_reply as $item_reply) {
             echo '<div class="admin_comment_body"><div class="admin_comment_meta">';
-            echo "<div class='header_box'><img src='../guestbook/userheader/jack.jpg'></div><div class='nickname_show'>Jack</div></div><div class='admin_comment_content'>";
-            echo '<div class="dot"><span class="dot3"></span><span class="dot4"></span></div><span class="admin_comment_text">' . $item['admin_comment_content'] . '</span>';
+            echo "<div class='header_box'><img src=" . $item_reply['comment_header'] . "></div><div class='nickname_show'>" . $item_reply['comment_nick_name'] . "</div></div><div class='admin_comment_content'>";
+            echo '<div class="dot"><span class="dot3"></span><span class="dot4"></span></div><span class="admin_comment_text">' . $item_reply['comment_content'] . '</span>';
             echo '<div class="comment_info">' .
-                '<span class="clock_img"><img src="img/clock.png"></span>' .
-                '<span class="time">' . $item['admin_comment_time'] . '  </span>' .
+                '<span class="clock_img"><img src="./img/clock.png"></span>' .
+                '<span class="time">' . $item_reply['comment_time'] . '  </span>' .
                 '</div>';
             echo '</div></div>';
         }
+        echo '</div>';
+        mysqli_free_result($result_reply);
+
     }
     //print_r($res);
     mysqli_close($link);
@@ -158,6 +177,7 @@ mia;
             </div>
             <div class="form_right">
                 <textarea required placeholder="写下你的评论..." name="comment"></textarea>
+                <input type='text' class='e_hidden' name='view_page' value='<?php echo $page  ?>'>
                 <p class="btn_sub"><input type="submit" name="submit" value="留个足迹">
                 </p></div>
 
@@ -171,6 +191,32 @@ mia;
             form.btnok.click(); //表单提交
         }
     }
+    function onRelpy(node, guest_nickname, page) {
+        var domtree = $(node).parent().parent().parent().parent();
+
+        var form_context = "<form action='wp-comments-post.php' method='post' class='form_post' onkeydown='keydown()'>" +
+            "<div class='form_content'><div class='form_left'><input type='text' placeholder='你的大名' required name='nickname'>" +
+            "<input type='email' placeholder='E-mail' required name='email'>" +
+            "<input type='text' name='site' placeholder='你的网站(可选)'>" +
+            "</div> <div class='form_right'><textarea required placeholder='写下你的评论...' name='comment'></textarea>" +
+            "<input type='text' class='e_hidden' name='__guest_nickname' value='" + guest_nickname + "'>" +
+            "<input type='text' class='e_hidden' name='view_page' value='" + page + "'>" +
+            "<p class='btn_sub'><input type='submit' name='comment_submit' value='留个足迹'></p></div></div></form>";
+//        console.log(form_context);
+        //先移除，再添加！！！
+        $("form").remove();
+        domtree.after(form_context);
+    }
+    $(document).ready(
+        $(".comment_content").bind('mouseenter', function () {
+            $(this).find("a").css('visibility', 'visible')
+        })
+    )
+    $(document).ready(
+        $(".comment_content").bind("mouseleave", function () {
+            $(this).find("a").css('visibility', 'hidden')
+        })
+    )
 </script>
 </body>
 </html>
