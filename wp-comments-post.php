@@ -202,7 +202,7 @@ mia;
         mysqli_query($link, $sql_admin_insert_comment);
         if (mysqli_affected_rows($link)) {
             $_SESSION['comment_status'] = '1';
-            $redirPage =  $view_page . "#comment_" . $comment_id;
+            $redirPage =     $view_page . "#comment_" . $comment_id;
             redirect($redirPage);
             exit;
         } else {
