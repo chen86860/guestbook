@@ -110,7 +110,7 @@ if (isset($_POST['comment_submit'])) {
 
 //comment
 //UTF-8汉字字母数字下划线正则表达式！！！
-        $patten_comment = '/^[\x{4e00}-\x{9fa5}A-Za-z0-9_]{1,100}+$/u';
+        $patten_comment = '/^[\x{4e00}-\x{9fa5}A-Za-z0-9_\s]{1,150}+$/u';
         if (isset($_POST['comment'])) {
             if (preg_match($patten_comment, $_POST['comment'])) {
                 $comment = $_POST['comment'];
