@@ -2,7 +2,7 @@
 html, body {
     margin: 0;
     padding: 0;
-    font-family: "Open Sans", "lucida grande", "Segoe UI", arial, verdana, "lucida sans unicode", tahoma, sans-serif;
+    font-family: "microsoft yahei","Open Sans", "lucida grande", "Segoe UI", arial, verdana, "lucida sans unicode", tahoma, sans-serif;
 }
 header{
     width: 520px;
@@ -131,7 +131,11 @@ header>p{
     /* height: 0; */
     position: absolute;
 }
-
+.comment_warp{
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 9px;
+    margin-bottom: 15px;
+}
 .comment_succeed, .comment_faild {
     width: 94%;
     height: auto;
@@ -164,9 +168,10 @@ header>p{
     height: 186px;
     background-color: #f5f5f5;
     /* height: 300px; */
-    margin-top: 21px;
+    /*margin-top: 21px;*/
     border: 1px solid #dedede;
     border-radius: 3px;
+    margin-bottom: 10px;
 }
 
 .form_content {
@@ -215,7 +220,7 @@ header>p{
     border: 1px solid #03A9F4;
     color: #fff;
     border-radius: 4px;
-    font-family: "Open Sans", "lucida grande", "Segoe UI", arial, verdana, "lucida sans unicode", tahoma, sans-serif;
+    font-family: "microsoft yahei","Open Sans", "lucida grande", "Segoe UI", arial, verdana, "lucida sans unicode", tahoma, sans-serif;
     cursor: pointer;
 
 }
@@ -224,10 +229,17 @@ header>p{
     text-align: right;
 
 }
+.btn_sub>a{
+    font-size: 14px;
+    text-align: center;
+    color: #2196f3;
+    text-decoration: none;
+    margin-right: 10px;
+}
 .page_rows{
     clear: both;
-    /* background-color: #03A9F4; */
-    margin-top: 21px;
+    height: 40px;
+    line-height: 40px;
 }
 .page_rows>p{
     margin: 0;
@@ -293,4 +305,8 @@ header>p{
 }
 .e_hidden{
     display: none;
+}
+.squre_dot{
+    width: 40px;
+    height: 40px;
 }

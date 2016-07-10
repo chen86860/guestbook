@@ -48,10 +48,10 @@ function get_client_ip()
     return "27.45.36.179";
 }
 
+
+//提交评论
 if (isset($_POST['comment_submit'])) {
     if (isset($_POST['comment']) && isset($_POST['__guest_nickname'])) {
-
-
 //数据验证
 //用户名
         $patten_user = '/^[\x{4e00}-\x{9fa5}A-Za-z0-9_\s]+$/u';
@@ -60,12 +60,14 @@ if (isset($_POST['comment_submit'])) {
                 $nickname = $_POST['nickname'];
             } else {
                 setcookie('commnet_guest_status', '0');
-                redirect("index.php#comment_failed");
+                echo "user_err";
+//                redirect("index.php#comment_failed");
                 exit;
             }
         } else {
             setcookie('commnet_guest_status', '0');
             redirect("index.php#comment_failed");
+//            echo "usre_err";
             exit;
         }
 
@@ -75,7 +77,6 @@ if (isset($_POST['comment_submit'])) {
             if (preg_match($patten_email, $_POST['email'])) {
                 $email = $_POST['email'];
             } else {
-//        echo "email ERROR";
                 setcookie('commnet_guest_status', '0');
                 redirect("index.php#comment_failed");
                 exit;
@@ -105,7 +106,6 @@ if (isset($_POST['comment_submit'])) {
             }
         } else {
             $site = "";
-            exit;
         }
 
 //comment
@@ -137,40 +137,51 @@ if (isset($_POST['comment_submit'])) {
 //连接数据库
         include('conn.php');
 
-//判断用户是否存在
-        $sql_check_user_exit = <<<mia
-select header from comment where email = '$email' and nickname = '$nickname';
-mia;
-        $res = mysqli_fetch_array(mysqli_query($link, $sql_check_user_exit));
-        if ($res != null) {
-            $header_img = $res['header'];
-        }
-
         //当前时间
         date_default_timezone_set('PRC');
         $time_now = date("Y-m-d H:i:s", time());
-
-
-        //插入用户数据
-        $sql_commnet_insert = <<<mia
-insert into comment(nickname,email,site,comment_content,header,time,region_city) values('$nickname','$email','$site','$comment','$header_img','$time_now','$region_city')
+        if (!isset($_SESSION['username'])) {
+//判断用户是否存在
+            $sql_check_user_exit = <<<mia
+select header from comment where email = '$email' and nickname = '$nickname';
 mia;
-        mysqli_query($link, $sql_commnet_insert);
-        if (mysqli_affected_rows($link)) {
-            setcookie('commnet_guest_status', '1');
-            setcookie('commnet_guest_name', $nickname);
-            setcookie('commnet_guest_email', $email);
-            setcookie('commnet_guest_header', $header_img);
+            $res = mysqli_fetch_array(mysqli_query($link, $sql_check_user_exit));
+            if ($res != null) {
+                $header_img = $res['header'];
+            }
+
+
+
+
+            //插入用户数据
+            $sql_commnet_insert = <<<mia
+insert into comment(nickname,email,site,comment_content,header,time,region_city,comment_type) values('$nickname','$email','$site','$comment','$header_img','$time_now','$region_city',2)
+mia;
+            mysqli_query($link, $sql_commnet_insert);
+            if (mysqli_affected_rows($link)) {
+                setcookie('commnet_guest_status', '1');
+                setcookie('commnet_guest_name', $nickname);
+                setcookie('commnet_guest_email', $email);
+                setcookie('commnet_guest_header', $header_img);
+            } else {
+                setcookie('commnet_guest_status', '0');
+                $_COOKIE['commnet_guest_name'] = $nickname;
+                $_COOKIE['commnet_guest_email'] = $email;
+                redirect("index.php#comment_failed");
+                exit;
+            }
         } else {
-            setcookie('commnet_guest_status', '0');
-            $_COOKIE['commnet_guest_name'] = $nickname;
-            $_COOKIE['commnet_guest_email'] = $email;
-            redirect("index.php#comment_failed");
-            exit;
+
+            //管理员不需要插入新的评论，只需插入到comment_guest中即可。
+            $user_header = $_SESSION['header'];
+            $region_city = "UFO";
         }
 
         $__guest_nickname = $_POST['__guest_nickname'];
-        $view_page=$_POST['view_page'];
+
+        //comment_id ：既是楼层数
+        $comment_id = $_POST['comment_id'];
+        $view_page = $_POST['view_page'];
         //构建sql语句
         //判断是否是管理员
         if (isset($_SESSION['username'])) {
@@ -178,19 +189,20 @@ mia;
             $view_page = "admin/admin.php?page=" . $view_page;
             $session_user = $_SESSION['nickname'];
             $sql_admin_insert_comment = <<<mia
-insert into comment_guest(comment_host_name,comment_nick_name,comment_content,comment_time,comment_header)  values('$__guest_nickname','$session_user',' $comment','$time_now','$user_header')
+insert into comment_guest(comment_floor,comment_host_name,comment_nick_name,comment_content,comment_time,comment_header,region_city)  values('$comment_id','$__guest_nickname','$session_user',' $comment','$time_now','$user_header','$region_city')
 mia;
         } else {
             $user_header = $header_img;
+            $view_page = "index.php?page=" . $view_page;
             $cookie_user = $nickname;
             $sql_admin_insert_comment = <<<mia
-insert into comment_guest(comment_host_name,comment_nick_name,comment_content,comment_time,comment_header)  values('$__guest_nickname','$cookie_user',' $comment','$time_now','$user_header')
+insert into comment_guest(comment_floor,comment_host_name,comment_nick_name,comment_content,comment_time,comment_header,region_city)  values('$comment_id','$__guest_nickname','$cookie_user',' $comment','$time_now','$user_header','$region_city')
 mia;
         }
         mysqli_query($link, $sql_admin_insert_comment);
         if (mysqli_affected_rows($link)) {
             $_SESSION['comment_status'] = '1';
-            $redirPage = "index.php?page=" . $view_page . "#comment_succeed";
+            $redirPage =  $view_page . "#comment_" . $comment_id;
             redirect($redirPage);
             exit;
         } else {
@@ -263,8 +275,15 @@ if (isset($_POST['submit'])) {
 
 //comment
 //UTF-8汉字字母数字下划线正则表达式！！！
-    $patten_comment = '/^[\x{4e00}-\x{9fa5}A-Za-z0-9_]{1,100}+$/u';
+    $patten_comment = '/^[\x{4e00}-\x{9fa5}A-Za-z0-9_\s]{1,150}+$/u';
     if (isset($_POST['comment'])) {
+//        if (get_magic_quotes_gpc()) {
+//            $comment= stripslashes($_POST['comment']);
+//        }
+//        else {
+//            $comment= $_POST['comment'];
+//        }
+//        $comment= mysqli_real_escape_string($_POST['comment']);
         if (preg_match($patten_comment, $_POST['comment'])) {
             $comment = $_POST['comment'];
         } else {
@@ -279,15 +298,15 @@ if (isset($_POST['submit'])) {
         exit;
     }
 
+
 //当前时间
     date_default_timezone_set('PRC');
     $time_now = date("Y-m-d H:i:s", time());
 
 
-
     $ip_info = get_ip_data();
     $region_city = $ip_info['region'] . $ip_info['city'];
-    $view_page=$_POST['view_page'];
+    $view_page = $_POST['view_page'];
 //设置头像
     $path_img = "/guestbook/userheader/lianmeng_header";
     $header_img = $path_img . rand(1, 45) . '.jpg';
@@ -307,10 +326,11 @@ mia;
 
 
     $sql_commnet_insert = <<<mia
-insert into comment(nickname,email,site,comment_content,header,time,region_city) values('$nickname','$email','$site','$comment','$header_img','$time_now','$region_city')
+insert into comment(nickname,email,site,comment_content,header,time,region_city,comment_type) values('$nickname','$email','$site','$comment','$header_img','$time_now','$region_city',1)
 mia;
 
     mysqli_query($link, $sql_commnet_insert);
+
     if (mysqli_affected_rows($link)) {
         setcookie('commnet_guest_status', '1');
         setcookie('commnet_guest_name', $nickname);
