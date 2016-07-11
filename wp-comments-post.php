@@ -60,8 +60,8 @@ if (isset($_POST['comment_submit'])) {
                 $nickname = $_POST['nickname'];
             } else {
                 setcookie('commnet_guest_status', '0');
-                echo "user_err";
-//                redirect("index.php#comment_failed");
+//                echo "user_err";
+                redirect("index.php#comment_failed");
                 exit;
             }
         } else {
@@ -121,8 +121,9 @@ if (isset($_POST['comment_submit'])) {
                 exit;
             }
         } else {
+            setcookie('commnet_guest_status', '0');
             redirect("index.php#comment_failed");
-            echo "comment2 error";
+//            echo "comment2 error";
             exit;
         }
 
@@ -150,9 +151,6 @@ mia;
                 $header_img = $res['header'];
             }
 
-
-
-
             //插入用户数据
             $sql_commnet_insert = <<<mia
 insert into comment(nickname,email,site,comment_content,header,time,region_city,comment_type) values('$nickname','$email','$site','$comment','$header_img','$time_now','$region_city',2)
@@ -171,7 +169,6 @@ mia;
                 exit;
             }
         } else {
-
             //管理员不需要插入新的评论，只需插入到comment_guest中即可。
             $user_header = $_SESSION['header'];
             $region_city = "UFO";
@@ -202,10 +199,12 @@ mia;
         mysqli_query($link, $sql_admin_insert_comment);
         if (mysqli_affected_rows($link)) {
             $_SESSION['comment_status'] = '1';
+            setcookie('commnet_guest_status', '1');
             $redirPage =     $view_page . "#comment_" . $comment_id;
             redirect($redirPage);
             exit;
         } else {
+            setcookie('commnet_guest_status', '0');
             $_SESSION['comment_status'] = '1';
             redirect($view_page);
             exit;

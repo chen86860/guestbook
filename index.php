@@ -88,7 +88,7 @@ mia;
         foreach ($res as $item) {
             echo "<div class='comment_body'" . " id=comment_" . $item['id'] . "><div class='comment_meta'>";
             echo "<div class='header_box'><img src=" . $item['header'] . "></div><div class='nickname_show'>" . $item['nickname'] . "</div></div><div class='comment_content'>";
-            echo '<div class="dot"><span class="dot1"></span><span class="dot2"></span></div><span class="comment_text">' . $item['comment_content'] . '</span>';
+            echo '<div class="dot_left"></span></div><span class="comment_text">' . $item['comment_content'] . '</span>';
             echo '<div class="comment_info">' .
                 '<span class="clock_img"><img src="img/clock.png"></span>' .
                 '<span class="time">' . $item['time'] . '  </span>' .
@@ -113,7 +113,7 @@ mia;
             foreach ($res_reply as $item_reply) {
                 echo '<div class="admin_comment_body"><div class="admin_comment_meta">';
                 echo "<div class='header_box'><img src=" . $item_reply['comment_header'] . "></div><div class='nickname_show'>" . $item_reply['comment_nick_name'] . "</div></div><div class='admin_comment_content'>";
-                echo '<div class="dot"><span class="dot3"></span><span class="dot4"></span></div><span class="admin_comment_text">' . $item_reply['comment_content'] . '</span>';
+                echo '<div class="dot_top"></span></div><span class="admin_comment_text">' . $item_reply['comment_content'] . '</span>';
                 echo '<div class="comment_info">' .
                     '<span class="clock_img"><img src="./img/clock.png"></span>' .
                     '<span class="time">' . $item_reply['comment_time'] . '  </span>' .
@@ -175,6 +175,7 @@ mia;
     </div>
     <form action="wp-comments-post.php" method="post" class="form_post" onkeydown="keydown()">
         <div class="form_content">
+            <span class="dot_top"></span>
             <span class="squre_dot"></span>
             <div class="form_left">
                 <input type="text" placeholder="你的大名" required name="nickname" <?php
@@ -193,11 +194,12 @@ mia;
             <div class="form_right">
                 <textarea required placeholder="写下你的评论..." name="comment"></textarea>
                 <input type='text' class='e_hidden' name='view_page' value='<?php echo $pagenum ?>'>
-                <p class="btn_sub"><input type="submit" name="submit" value="留个足迹">
+                <p class="btn_sub"><input type="submit" name="submit" value="留个足迹" alt='留个足迹'>
                 </p></div>
 
         </div>
     </form>
+    <footer>©Jack Chen.2016---</footer>
 </div>
 <script type="text/javascript">
     function keydown() {
@@ -212,7 +214,7 @@ mia;
         _commnet_guest_email = commnet_guest_email;
         _page = page;
         var form_context = "<form action='wp-comments-post.php' method='post' class='form_post' onkeydown='keydown()'>" +
-            "<div class='form_content'><div class='form_left'><input type='text' placeholder='你的大名' value=" + commnet_guest_name + " required name='nickname'>" +
+            "<div class='form_content'> <span class='dot_top'></span><div class='form_left'><input type='text' placeholder='你的大名' value='" + commnet_guest_name + "'  name='nickname' required>" +
             "<input type='email' placeholder='E-mail' required name='email' value=" + commnet_guest_email + ">" +
             "<input type='text' name='site' placeholder='你的网站(可选)'>" +
             "</div> <div class='form_right'><textarea required placeholder='写下你的评论...' name='comment'></textarea>" +
@@ -221,7 +223,7 @@ mia;
             "<input type='text' class='e_hidden' name='comment_id' value='" + comment_id + "'>" +
             "<p class='btn_sub'>" +
             "<a  href='#' onclick='onRestore()'>撤销</a>" +
-            "<input type='submit' name='comment_submit' value='留个足迹'></p></div></div></form>";
+            "<input type='submit' name='comment_submit'  alt='留个足迹' value='留个足迹'></p></div></div></form>";
 //        console.log(form_context);
         //先移除，再添加！！！
         $("form").remove();
@@ -229,13 +231,13 @@ mia;
     }
     function onRestore(commnet_guest_name, commnet_guest_email) {
         var form_context = "<form action='wp-comments-post.php' method='post' class='form_post' onkeydown='keydown()'>" +
-            "<div class='form_content'><div class='form_left'><input type='text' placeholder='你的大名' value=" + _commnet_guest_name + " required name='nickname'>" +
+            "<div class='form_content'>  <span class='dot_top'></span><div class='form_left'><input type='text' placeholder='你的大名' value=" + _commnet_guest_name + "  name='nickname' required>" +
             "<input type='email' placeholder='E-mail' required name='email' value=" + _commnet_guest_email + ">" +
             "<input type='text' name='site' placeholder='你的网站(可选)'>" +
             "</div> <div class='form_right'><textarea required placeholder='写下你的评论...' name='comment'></textarea>" +
             "<p class='btn_sub'>" +
             "<input type='text' class='e_hidden' name='view_page' value='" + _page + "'>" +
-            "<input type='submit' name='submit' value='留个足迹'></p></div></div></form>";
+            "<input type='submit' name='submit' value='留个足迹' alt='留个足迹' ></p></div></div></form>";
         $("form").remove();
         $(".comment_warp").after(form_context);
     }
