@@ -3,7 +3,7 @@
   <component name="WebServers">
     <option name="servers">
       <webServer id="c412d39a-00bd-4e30-9fc0-b4927722137f" name="apache" url="http://localhost/guestbook">
-        <fileTransfer port="0" mountedRoot="E:\wamp64\www\guestbook" accessType="MOUNT" />
+        <fileTransfer port="0" mountedRoot="$USER_HOME$/E:\wamp64\www\guestbook" accessType="MOUNT" />
       </webServer>
     </option>
   </component>

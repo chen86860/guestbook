@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="DataSourceManagerImpl" format="xml" hash="3911361692">
+  <component name="DataSourceManagerImpl" format="xml" hash="1175363026">
     <data-source source="LOCAL" name="MySQL - guestbook@localhost" uuid="503ebe44-8714-4cf0-9768-e409713b5085">
       <driver-ref>mysql</driver-ref>
       <synchronize>true</synchronize>
